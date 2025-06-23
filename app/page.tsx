@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import CountUp from "react-countup"
+import { useState, useEffect } from "react"
 import {
   Shield,
   CreditCard,
@@ -31,6 +32,39 @@ import {
 export default function AcrossWebsite() {
   const { scrollYProgress } = useScroll()
   const smoothProgress = useSpring(scrollYProgress, { stiffness: 100, damping: 30 })
+  const [navbarTheme, setNavbarTheme] = useState('dark') // 'dark' or 'light'
+
+  // Monitor scroll position to change navbar theme
+  useEffect(() => {
+    const handleScroll = () => {
+      const scrollY = window.scrollY
+      const windowHeight = window.innerHeight
+      
+      // Define sections and their themes
+      const sections = [
+        { start: 0, end: windowHeight * 0.5, theme: 'dark' }, // Hero section
+        { start: windowHeight * 0.5, end: windowHeight * 1.5, theme: 'light' }, // How it works (light background)
+        { start: windowHeight * 1.5, end: windowHeight * 2.5, theme: 'dark' }, // Mission (dark background)
+        { start: windowHeight * 2.5, end: windowHeight * 3.5, theme: 'light' }, // Products (light background)
+        { start: windowHeight * 3.5, end: windowHeight * 4.5, theme: 'dark' }, // Revenue (dark background)
+        { start: windowHeight * 4.5, end: windowHeight * 5.5, theme: 'light' }, // Investment (light background)
+        { start: windowHeight * 5.5, end: windowHeight * 6.5, theme: 'dark' }, // CTA (dark background)
+      ]
+      
+      const currentSection = sections.find(section => 
+        scrollY >= section.start && scrollY < section.end
+      )
+      
+      if (currentSection && currentSection.theme !== navbarTheme) {
+        setNavbarTheme(currentSection.theme)
+      }
+    }
+
+    window.addEventListener('scroll', handleScroll)
+    handleScroll() // Check initial position
+    
+    return () => window.removeEventListener('scroll', handleScroll)
+  }, [navbarTheme])
 
   // Parallax transforms
   const heroY = useTransform(smoothProgress, [0, 0.3], [0, -100])
@@ -109,21 +143,33 @@ export default function AcrossWebsite() {
 
       {/* Navigation */}
       <motion.nav
-        className="fixed top-0 left-0 right-0 z-50 glass-effect"
-        initial={{ y: -100 }}
+        className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 mx-40 mt-20 rounded-full ${
+          navbarTheme === 'light' 
+            ? 'bg-white/95 backdrop-blur-xl border-b border-gray-200 shadow-[0_8px_32px_-8px_rgba(0,0,0,0.3),0_-2px_6px_-1px_rgba(0,0,0,0.1)_inset]' 
+            : 'bg-black/80 backdrop-blur-xl border-b border-white/10 shadow-[0_8px_32px_-8px_rgba(255,255,255,0.2),0_-2px_6px_-1px_rgba(255,255,255,0.05)_inset]'
+        }`}
+        initial={{ y: -500 }}
         animate={{ y: 0 }}
         transition={{ type: "spring", stiffness: 300, damping: 30 }}
       >
         <div className="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
           <motion.div className="text-2xl font-bold font-heading" whileHover={{ scale: 1.05 }}>
-            <span className="font-heading">Across</span>
+            <span className={`font-heading transition-colors duration-300 ${
+              navbarTheme === 'light' ? 'text-black' : 'text-white'
+            }`}>
+              Across
+            </span>
           </motion.div>
           <div className="hidden md:flex space-x-8">
             {["Products", "How it Works", "Investors", "Contact"].map((item) => (
               <motion.a
                 key={item}
                 href={`#${item.toLowerCase().replace(" ", "-")}`}
-                className="text-white transition-colors duration-300 font-medium"
+                className={`transition-colors duration-300 font-medium hover:scale-105 ${
+                  navbarTheme === 'light' 
+                    ? 'text-gray-700 hover:text-black' 
+                    : 'text-gray-300 hover:text-white'
+                }`}
                 whileHover={{ y: -2 }}
               >
                 {item}
@@ -131,7 +177,13 @@ export default function AcrossWebsite() {
             ))}
           </div>
           <motion.div whileHover={scaleOnHover} whileTap={{ scale: 0.95 }}>
-            <Button variant="outline" className="text-gray-800 hover:from-blue-700 hover:to-purple-700 rounded-full px-6 font-medium glow-effect">
+            <Button 
+              className={`rounded-full px-6 font-medium transition-all duration-300 ${
+                navbarTheme === 'light'
+                  ? 'bg-black text-white hover:bg-gray-800 shadow-lg hover:shadow-xl'
+                  : 'bg-white text-black hover:bg-gray-100 shadow-lg hover:shadow-xl'
+              }`}
+            >
               Get Started
             </Button>
           </motion.div>
