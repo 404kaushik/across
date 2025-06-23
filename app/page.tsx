@@ -32,39 +32,6 @@ import {
 export default function AcrossWebsite() {
   const { scrollYProgress } = useScroll()
   const smoothProgress = useSpring(scrollYProgress, { stiffness: 100, damping: 30 })
-  const [navbarTheme, setNavbarTheme] = useState('dark') // 'dark' or 'light'
-
-  // Monitor scroll position to change navbar theme
-  useEffect(() => {
-    const handleScroll = () => {
-      const scrollY = window.scrollY
-      const windowHeight = window.innerHeight
-      
-      // Define sections and their themes
-      const sections = [
-        { start: 0, end: windowHeight * 0.5, theme: 'dark' }, // Hero section
-        { start: windowHeight * 0.5, end: windowHeight * 1.5, theme: 'light' }, // How it works (light background)
-        { start: windowHeight * 1.5, end: windowHeight * 2.5, theme: 'dark' }, // Mission (dark background)
-        { start: windowHeight * 2.5, end: windowHeight * 3.5, theme: 'light' }, // Products (light background)
-        { start: windowHeight * 3.5, end: windowHeight * 4.5, theme: 'dark' }, // Revenue (dark background)
-        { start: windowHeight * 4.5, end: windowHeight * 5.5, theme: 'light' }, // Investment (light background)
-        { start: windowHeight * 5.5, end: windowHeight * 6.5, theme: 'dark' }, // CTA (dark background)
-      ]
-      
-      const currentSection = sections.find(section => 
-        scrollY >= section.start && scrollY < section.end
-      )
-      
-      if (currentSection && currentSection.theme !== navbarTheme) {
-        setNavbarTheme(currentSection.theme)
-      }
-    }
-
-    window.addEventListener('scroll', handleScroll)
-    handleScroll() // Check initial position
-    
-    return () => window.removeEventListener('scroll', handleScroll)
-  }, [navbarTheme])
 
   // Parallax transforms
   const heroY = useTransform(smoothProgress, [0, 0.3], [0, -100])
@@ -143,51 +110,132 @@ export default function AcrossWebsite() {
 
       {/* Navigation */}
       <motion.nav
-        className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 mx-40 mt-20 rounded-full ${
-          navbarTheme === 'light' 
-            ? 'bg-white/95 backdrop-blur-xl border-b border-gray-200 shadow-[0_8px_32px_-8px_rgba(0,0,0,0.3),0_-2px_6px_-1px_rgba(0,0,0,0.1)_inset]' 
-            : 'bg-black/80 backdrop-blur-xl border-b border-white/10 shadow-[0_8px_32px_-8px_rgba(255,255,255,0.2),0_-2px_6px_-1px_rgba(255,255,255,0.05)_inset]'
-        }`}
-        initial={{ y: -500 }}
-        animate={{ y: 0 }}
-        transition={{ type: "spring", stiffness: 300, damping: 30 }}
+        className="fixed top-0 left-0 right-0 z-50 px-6 pt-6"
+        initial={{ y: -100, opacity: 0 }}
+        animate={{ y: 0, opacity: 1 }}
+        transition={{ 
+          type: "spring", 
+          stiffness: 400, 
+          damping: 25,
+          delay: 0.1 
+        }}
       >
-        <div className="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
-          <motion.div className="text-2xl font-bold font-heading" whileHover={{ scale: 1.05 }}>
-            <span className={`font-heading transition-colors duration-300 ${
-              navbarTheme === 'light' ? 'text-black' : 'text-white'
-            }`}>
-              Across
-            </span>
-          </motion.div>
-          <div className="hidden md:flex space-x-8">
-            {["Products", "How it Works", "Investors", "Contact"].map((item) => (
-              <motion.a
-                key={item}
-                href={`#${item.toLowerCase().replace(" ", "-")}`}
-                className={`transition-colors duration-300 font-medium hover:scale-105 ${
-                  navbarTheme === 'light' 
-                    ? 'text-gray-700 hover:text-black' 
-                    : 'text-gray-300 hover:text-white'
-                }`}
-                whileHover={{ y: -2 }}
-              >
-                {item}
-              </motion.a>
-            ))}
-          </div>
-          <motion.div whileHover={scaleOnHover} whileTap={{ scale: 0.95 }}>
-            <Button 
-              className={`rounded-full px-6 font-medium transition-all duration-300 ${
-                navbarTheme === 'light'
-                  ? 'bg-black text-white hover:bg-gray-800 shadow-lg hover:shadow-xl'
-                  : 'bg-white text-black hover:bg-gray-100 shadow-lg hover:shadow-xl'
-              }`}
+        <motion.div
+          className="mx-auto max-w-7xl relative overflow-hidden transition-all duration-700 ease-out bg-black/90 backdrop-blur-2xl rounded-2xl"
+          animate={{
+            boxShadow: [
+              '0 4px 32px rgba(0, 0, 0, 0.06), 0 1px 3px rgba(0, 0, 0, 0.07)',
+              '0 8px 48px rgba(0, 0, 0, 0.10), 0 2px 6px rgba(0, 0, 0, 0.10)',
+              '0 4px 32px rgba(0, 0, 0, 0.06), 0 1px 3px rgba(0, 0, 0, 0.07)',
+            ]
+          }}
+          transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
+        >
+          <div className="flex items-center justify-between px-8 py-4">
+            
+            {/* Logo - Apple-inspired minimal design */}
+            <motion.div
+              className="relative"
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.98 }}
+              transition={{ type: "spring", stiffness: 500, damping: 30 }}
             >
-              Get Started
-            </Button>
-          </motion.div>
-        </div>
+              <motion.h1
+                className="text-2xl font-medium tracking-tight transition-all duration-500 text-white hover:text-gray-600"
+              >
+                Across
+              </motion.h1>
+              
+              {/* Subtle gradient overlay on hover */}
+              <motion.div
+                className="absolute inset-0 bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 bg-clip-text text-transparent text-2xl font-medium tracking-tight opacity-0 hover:opacity-100 transition-opacity duration-300"
+                whileHover={{ opacity: 1 }}
+              >
+                Across
+              </motion.div>
+            </motion.div>
+
+            {/* Navigation Links - Clean minimal design */}
+            <div className="hidden md:flex items-center space-x-1 ">
+              {["Products", "How it Works", "Investors", "Contact"].map((item, index) => (
+                <motion.div key={item} className="relative">
+                  <motion.a
+                    href={`#${item.toLowerCase().replace(" ", "-")}`}
+                    className="relative px-4 py-2.5 rounded-xl text-sm font-medium transition-all duration-300 text-white hover:text-black"
+                    whileHover={{ 
+                      backgroundColor: 'rgba(0, 0, 0, 0.04)',
+                      scale: 1.02
+                    }}
+                    whileTap={{ scale: 0.98 }}
+                    transition={{ 
+                      type: "spring", 
+                      stiffness: 400, 
+                      damping: 25,
+                      backgroundColor: { duration: 0.2 }
+                    }}
+                  >
+                    {item}
+                    
+                    {/* Subtle active indicator */}
+                    <motion.div
+                      className="absolute bottom-0 left-1/2 h-0.5 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full"
+                      initial={{ width: 0, x: "-50%" }}
+                      whileHover={{ width: "80%" }}
+                      transition={{ duration: 0.3, ease: "easeOut" }}
+                    />
+                  </motion.a>
+                </motion.div>
+              ))}
+            </div>
+
+            {/* CTA Button - Apple-inspired design */}
+            <motion.div
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.98 }}
+              transition={{ type: "spring", stiffness: 400, damping: 25 }}
+            >
+              <motion.button
+                className="relative overflow-hidden px-6 py-2.5 rounded-xl text-sm font-medium transition-all duration-300 bg-black text-white hover:bg-gray-800 shadow-lg"
+                whileHover={{
+                  boxShadow: '0 8px 32px rgba(0, 0, 0, 0.2), 0 2px 8px rgba(0, 0, 0, 0.15)'
+                }}
+                transition={{ duration: 0.3 }}
+              >
+                {/* Subtle shimmer effect on hover */}
+                <motion.div
+                  className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent"
+                  initial={{ x: "-100%" }}
+                  whileHover={{ x: "100%" }}
+                  transition={{ duration: 0.6, ease: "easeInOut" }}
+                />
+                
+                <span className="relative flex items-center gap-2">
+                  Get Started
+                  <motion.span
+                    animate={{ x: [0, 2, 0] }}
+                    transition={{ 
+                      duration: 2, 
+                      repeat: Infinity, 
+                      ease: "easeInOut" 
+                    }}
+                  >
+                    →
+                  </motion.span>
+                </span>
+              </motion.button>
+            </motion.div>
+          </div>
+
+          {/* Subtle bottom accent - very minimal */}
+          <motion.div
+            className="absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-gray-300/50 to-transparent"
+            animate={{ opacity: [0.5, 1, 0.5] }}
+            transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
+          />
+        </motion.div>
+
+        {/* Outer subtle glow - very refined */}
+        
       </motion.nav>
 
       {/* Hero Section */}
@@ -200,6 +248,77 @@ export default function AcrossWebsite() {
           <div className="absolute top-20 left-20 w-72 h-72 bg-blue-600/20 rounded-full blur-3xl animate-pulse"></div>
           <div className="absolute bottom-20 right-20 w-96 h-96 bg-purple-600/20 rounded-full blur-3xl animate-pulse delay-1000"></div>
           <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-full h-full bg-gradient-to-r from-transparent via-blue-900/10 to-transparent"></div>
+        </div>
+
+        {/* Concentric Circles */}
+        <div className="absolute inset-0 flex items-center justify-center">
+          {[1, 2, 3, 4, 5, 6].map((index) => (
+            <motion.div
+              key={index}
+              className="absolute border border-white/30 rounded-full"
+              style={{
+                width: `${index * 120 + 200}px`,
+                height: `${index * 120 + 200}px`,
+              }}
+              initial={{ opacity: 0, scale: 1 }}
+              animate={{ 
+                opacity: 0.6,
+                rotate: index % 2 === 0 ? 360 : -360,
+                scale: [1, 1.05, 1],
+              }}
+              transition={{
+                opacity: {
+                  duration: 1,
+                  delay: index * 0.1
+                },
+                rotate: {
+                  duration: 25 + index * 3,
+                  repeat: Infinity,
+                  ease: "linear"
+                },
+                scale: {
+                  duration: 1.5,
+                  repeat: Infinity,
+                  ease: "easeInOut"
+                }
+              }}
+            />
+          ))}
+          
+          {/* Additional decorative circles */}
+          {[1, 2, 3].map((index) => (
+            <motion.div
+              key={`outer-${index}`}
+              className="absolute border border-white rounded-full"
+              style={{
+                width: `${index * 150 + 800}px`,
+                height: `${index * 150 + 800}px`,
+              }}
+              initial={{ opacity: 0, scale: 1 }}
+              animate={{ 
+                opacity: 0.3,
+                rotate: index % 2 === 0 ? -360 : 360,
+                scale: [1, 1.03, 1]
+              }}
+              transition={{
+                opacity: {
+                  duration: 1.5,
+                  delay: index * 0.2 + 0.5
+                },
+                rotate: {
+                  duration: 35 + index * 4,
+                  repeat: Infinity,
+                  ease: "linear"
+                },
+                scale: {
+                  duration: 1.5,
+                  repeat: Infinity,
+                  ease: "easeInOut",
+                  delay: index * 0.2
+                }
+              }}
+            />
+          ))}
         </div>
 
         <motion.div
@@ -217,9 +336,29 @@ export default function AcrossWebsite() {
 
           <motion.h1 
             variants={itemVariants} 
-            className="text-7xl md:text-9xl lg:text-[12rem] font-heading mb-8 tracking-tight leading-none"
+            className="text-7xl md:text-9xl lg:text-[12rem] font-heading mb-8 tracking-tight leading-none relative"
           >
-            Across
+            <span className="bg-gradient-to-r from-white via-blue-200 to-purple-200 bg-clip-text text-transparent drop-shadow-2xl">
+              Across
+            </span>
+            
+            {/* Central glow effect with heartbeat */}
+            <motion.div
+              className="absolute inset-0 flex items-center justify-center"
+              initial={{ opacity: 0, scale: 1 }}
+              animate={{ 
+                opacity: [0, 0.8, 0.4],
+                scale: [1, 1.15, 1]
+              }}
+              transition={{
+                duration: 1,
+                repeat: Infinity,
+                repeatType: "reverse",
+                ease: "easeInOut"
+              }}
+            >
+              <div className="w-32 h-32 bg-white/10 rounded-full blur-3xl"></div>
+            </motion.div>
           </motion.h1>
 
           <motion.p
@@ -257,8 +396,15 @@ export default function AcrossWebsite() {
 
         <motion.div
           className="absolute bottom-12 left-1/2 transform -translate-x-1/2"
-          animate={{ y: [0, 15, 0] }}
-          transition={{ duration: 2.5, repeat: Number.POSITIVE_INFINITY }}
+          animate={{ 
+            y: [0, 15, 0],
+            scale: [1, 1.1, 1]
+          }}
+          transition={{ 
+            duration: 2.5, 
+            repeat: Number.POSITIVE_INFINITY,
+            ease: "easeInOut"
+          }}
         >
           <div className="glass-effect rounded-full p-3">
             <ArrowDown className="w-6 h-6 text-white/70" />
